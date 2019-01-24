@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace _2048_game.Infrastructure
+namespace music_player_lite.Infrastructure
 {
     class RelayCommand : ICommand
     {

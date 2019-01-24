@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace _2048_game.ViewModel
+namespace music_player_lite.ViewModel
 {
     class ViewModelBase : INotifyPropertyChanged, IDisposable
     {

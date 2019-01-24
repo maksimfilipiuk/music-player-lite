@@ -27,7 +27,6 @@ namespace music_player_lite.ViewModel
                 return playerData;
             }
         }
-
         public ObservableCollection<string> Playlist
         {
             get
@@ -35,7 +34,6 @@ namespace music_player_lite.ViewModel
                 return PlayerData.Playlists;
             }
         }
-
         public ObservableCollection<string> Songs
         {
             get
@@ -43,6 +41,12 @@ namespace music_player_lite.ViewModel
                 return PlayerData.Songs;
             }
         }
+
+        MediaPlayer mediaPlayer = new MediaPlayer();
+        bool isMediaPlayerPaused = false;
+
+        private int[] currentSong = { -1, -1 }; // 0 - playlist index, 1 - song index;
+        private int currentSongListIndex = -1;
 
         public int CurrentPlaylistIndex
         {
@@ -57,26 +61,14 @@ namespace music_player_lite.ViewModel
             }
         }
 
-        private int[] currentSong = { -1, -1 }; // 0 - playlist index, 1 - song index;
-        private int currentSongListIndex = -1;
-
-        public int[] CurrentSong/* { get => currentSong; set => currentSong = value; }*/
-        {
-            get
-            {
-                return currentSong;
-            }
-            set
-            {
-                currentSong = value;
-            }
-        }
+        public int[] CurrentSong { get => currentSong; set => currentSong = value; }
         public int CurrentSongListIndex { get => currentSongListIndex; set => currentSongListIndex = value; }
 
         public string SongTitle { get => Songs[CurrentSong[1]]; }
 
-        MediaPlayer mediaPlayer = new MediaPlayer();
-        bool isMediaPlayerPaused = false;
+        public float Volume { set => mediaPlayer.Volume = value; }
+        public float Balance { set => mediaPlayer.Balance = value; }
+        public float Speed { set => mediaPlayer.SpeedRatio = value; }
 
         RelayCommand updateSongListCommand;
         public ICommand UpdateSongList
@@ -134,33 +126,12 @@ namespace music_player_lite.ViewModel
             }
         }
 
-        
-
-        private bool CanExecuteStopSongCommand(object obj)
+        private bool CanExecuteUpdateSongListCommand(object obj)
         {
-            if (CurrentSong[1] == -1)
+            if (CurrentPlaylistIndex == -1)
                 return false;
+
             return true;
-        }
-
-        private void ExecuteStopSongCommand(object obj)
-        {
-            mediaPlayer.Stop();
-            CurrentSong[0] = -1;
-            CurrentSong[1] = -1;
-        }
-
-        private bool CanExecutePauseSongCommand(object obj)
-        {
-            if (CurrentSong[1] == -1 || isMediaPlayerPaused)
-                return false;
-            return true;
-        }
-
-        private void ExecutePauseSongCommand(object obj)
-        {
-            mediaPlayer.Pause();
-            isMediaPlayerPaused = true;
         }
 
         private bool CanExecutePlaySongCommand(object obj)
@@ -170,9 +141,29 @@ namespace music_player_lite.ViewModel
             return true;
         }
 
+        private bool CanExecutePauseSongCommand(object obj)
+        {
+            if (CurrentSong[1] == -1 || isMediaPlayerPaused)
+                return false;
+            return true;
+        }
+
+        private bool CanExecuteStopSongCommand(object obj)
+        {
+            if (CurrentSong[1] == -1)
+                return false;
+            return true;
+        }
+
+
+        private void ExecuteUpdateSongListCommand(object obj)
+        {
+            CurrentPlaylistIndex = CurrentPlaylistIndex;
+        }
+
         private void ExecutePlaySongCommand(object obj)
         {
-            if(CurrentSong[0] == CurrentPlaylistIndex && CurrentSong[1] == CurrentSongListIndex)
+            if (CurrentSong[0] == CurrentPlaylistIndex && CurrentSong[1] == CurrentSongListIndex)
             {
                 mediaPlayer.Play();
                 isMediaPlayerPaused = false;
@@ -182,8 +173,24 @@ namespace music_player_lite.ViewModel
             PlaySong(CurrentPlaylistIndex, CurrentSongListIndex);
         }
 
+        private void ExecutePauseSongCommand(object obj)
+        {
+            mediaPlayer.Pause();
+            isMediaPlayerPaused = true;
+        }
+
+        private void ExecuteStopSongCommand(object obj)
+        {
+            mediaPlayer.Stop();
+            CurrentSong[0] = -1;
+            CurrentSong[1] = -1;
+        }
+
+
         private void PlaySong(int currentPlaylistIndex, int currentSongListIndex)
         {
+            isMediaPlayerPaused = false;
+
             string path = "music\\" + Playlist[CurrentPlaylistIndex] + "\\" + Songs[CurrentSongListIndex] + ".mp3";
             mediaPlayer.Open(new Uri(path, UriKind.Relative));
             mediaPlayer.Play();
@@ -193,19 +200,7 @@ namespace music_player_lite.ViewModel
             CurrentSong[1] = CurrentSongListIndex;
 
             OnPropertyChanged("SongTitle");
-        }
-
-        private bool CanExecuteUpdateSongListCommand(object obj)
-        {
-            if (CurrentPlaylistIndex == -1)
-                return false;
-
-            return true;
-        }
-
-        private void ExecuteUpdateSongListCommand(object obj)
-        {
-            CurrentPlaylistIndex = CurrentPlaylistIndex;
+            OnPropertyChanged("RewindMaximum");
         }
     }
 }

@@ -29,13 +29,7 @@ namespace music_player_lite.Model
             }
         }
 
-        public ObservableCollection<string> Songs
-        {
-            get
-            {
-                return songs;
-            }
-        }
+        public ObservableCollection<string> Songs { get => songs; }
 
         public int CurrentPlaylistIndex
         {
@@ -81,13 +75,6 @@ namespace music_player_lite.Model
             }
 
             return _playlists;
-        }
-
-        
-
-        public PlayerData()
-        {
-            
         }
     }
 }

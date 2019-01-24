@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:music_player_lite.ViewModel"
         mc:Ignorable="d"
-        Title="Music Player LITE" Height="462.815" Width="359.693" ResizeMode="NoResize">
+        Title="Music Player LITE" Height="456.815" Width="359.693" ResizeMode="NoResize">
 
     <Window.DataContext>
         <local:MainWindowViewModel/>
@@ -13,13 +13,12 @@
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="25*"/>
-            <RowDefinition Height="214*"/>
-            <RowDefinition Height="22*"/>
-            <RowDefinition Height="59*"/>
-            <RowDefinition Height="38*"/>
-            <RowDefinition Height="25*"/>
-            <RowDefinition Height="50*"/>
+            <RowDefinition Height="32.8"/>
+            <RowDefinition Height="214.4"/>
+            <RowDefinition Height="22.4"/>
+            <RowDefinition Height="59.2"/>
+            <RowDefinition Height="38.4"/>
+            <RowDefinition/>
         </Grid.RowDefinitions>
         <Grid HorizontalAlignment="Left" Height="30" VerticalAlignment="Top" Width="338" Grid.RowSpan="2" Margin="0">
             <Grid.ColumnDefinitions>
@@ -59,29 +58,18 @@
             </Grid.ColumnDefinitions>
             <StackPanel HorizontalAlignment="Left" Height="38" VerticalAlignment="Top" Width="240">
                 <TextBlock TextWrapping="Wrap" Text="Перемотка" TextAlignment="Center"/>
-                <Slider Margin="5,0,5,0"/>
+                <Slider Value="{Binding Path=RewindValue, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Minimum="0" Maximum="{Binding Path=RewindMaximum, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Margin="5,0,5,0"/>
             </StackPanel>
             <StackPanel Grid.Column="1" HorizontalAlignment="Left" Height="38" VerticalAlignment="Top" Width="92">
                 <TextBlock TextWrapping="Wrap" Text="Volume" TextAlignment="Center"/>
-                <Slider Margin="5,0,5,0"/>
+                <Slider Minimum="0" Maximum="1" Value="{Binding Path=Volume, FallbackValue=0.6, Mode=OneWayToSource}" Margin="5,0,5,0"/>
             </StackPanel>
         </Grid>
-        <!--<TextBlock Margin="0,0,9.6,0.2" HorizontalAlignment="Right" Grid.Row="5" VerticalAlignment="Bottom" Height="25" Width="332" Foreground="#FF322FBC"
-                   Text="___________________________________________________________________" />-->
-        <Grid HorizontalAlignment="Left" Height="50"  Grid.Row="6" VerticalAlignment="Top" Width="333" Margin="5,1.8,0,-1.4">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1*"/>
-                <ColumnDefinition Width="1*"/>
-            </Grid.ColumnDefinitions>
-            <StackPanel HorizontalAlignment="Left" Height="50" VerticalAlignment="Top" Width="166">
-                <TextBlock TextWrapping="Wrap" Text="Volume" TextAlignment="Center"/>
-                <Slider Margin="5,0,5,0"/>
-            </StackPanel>
-            <StackPanel HorizontalAlignment="Left" Height="50" VerticalAlignment="Top" Width="167" Grid.ColumnSpan="2" Margin="166,0,-0.2,0">
-                <TextBlock TextWrapping="Wrap" Text="Balance" TextAlignment="Center"/>
-                <Slider Margin="5,0,5,0"/>
-            </StackPanel>
-        </Grid>
+        <StackPanel HorizontalAlignment="Left" Height="50" Grid.Row="5" VerticalAlignment="Top" Width="337" Margin="0,4.8,0,0">
+            <TextBlock TextWrapping="Wrap" Text="Balance" TextAlignment="Center"/>
+            <Slider Minimum="-1" Maximum="1" Value="{Binding Path=Balance, FallbackValue=0, Mode=OneWayToSource}" Margin="5,0,5,0"/>
+        </StackPanel>
+
 
 
 

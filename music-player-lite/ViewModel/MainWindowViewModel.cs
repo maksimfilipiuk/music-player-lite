@@ -6,6 +6,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using music_player_lite.Model;
+using music_player_lite.Infrastructure;
+using System.Windows.Input;
+using System.Windows.Media;
 
 namespace music_player_lite.ViewModel
 {
@@ -54,11 +57,155 @@ namespace music_player_lite.ViewModel
             }
         }
 
-        
+        private int[] currentSong = { -1, -1 }; // 0 - playlist index, 1 - song index;
+        private int currentSongListIndex = -1;
+
+        public int[] CurrentSong/* { get => currentSong; set => currentSong = value; }*/
+        {
+            get
+            {
+                return currentSong;
+            }
+            set
+            {
+                currentSong = value;
+            }
+        }
+        public int CurrentSongListIndex { get => currentSongListIndex; set => currentSongListIndex = value; }
+
+        public string SongTitle { get => Songs[CurrentSong[1]]; }
+
+        MediaPlayer mediaPlayer = new MediaPlayer();
+        bool isMediaPlayerPaused = false;
+
+        RelayCommand updateSongListCommand;
+        public ICommand UpdateSongList
+        {
+            get
+            {
+                if(updateSongListCommand == null)
+                {
+                    updateSongListCommand = new RelayCommand(ExecuteUpdateSongListCommand, CanExecuteUpdateSongListCommand);
+                }
+
+                return updateSongListCommand;
+            }
+        }
+
+        RelayCommand playSongCommand;
+        public ICommand PlaySongCommand
+        {
+            get
+            {
+                if(playSongCommand == null)
+                {
+                    playSongCommand = new RelayCommand(ExecutePlaySongCommand, CanExecutePlaySongCommand);
+                }
+
+                return playSongCommand;
+            }
+        }
+
+        RelayCommand pauseSongCommand;
+        public ICommand PauseSongCommand
+        {
+            get
+            {
+                if (pauseSongCommand == null)
+                {
+                    pauseSongCommand = new RelayCommand(ExecutePauseSongCommand, CanExecutePauseSongCommand);
+                }
+
+                return pauseSongCommand;
+            }
+        }
+
+        RelayCommand stopSongCommand;
+        public ICommand StopSongCommand
+        {
+            get
+            {
+                if (stopSongCommand == null)
+                {
+                    stopSongCommand = new RelayCommand(ExecuteStopSongCommand, CanExecuteStopSongCommand);
+                }
+
+                return stopSongCommand;
+            }
+        }
 
         
 
-        
-        
+        private bool CanExecuteStopSongCommand(object obj)
+        {
+            if (CurrentSong[1] == -1)
+                return false;
+            return true;
+        }
+
+        private void ExecuteStopSongCommand(object obj)
+        {
+            mediaPlayer.Stop();
+            CurrentSong[0] = -1;
+            CurrentSong[1] = -1;
+        }
+
+        private bool CanExecutePauseSongCommand(object obj)
+        {
+            if (CurrentSong[1] == -1 || isMediaPlayerPaused)
+                return false;
+            return true;
+        }
+
+        private void ExecutePauseSongCommand(object obj)
+        {
+            mediaPlayer.Pause();
+            isMediaPlayerPaused = true;
+        }
+
+        private bool CanExecutePlaySongCommand(object obj)
+        {
+            if (CurrentSongListIndex == -1)
+                return false;
+            return true;
+        }
+
+        private void ExecutePlaySongCommand(object obj)
+        {
+            if(CurrentSong[0] == CurrentPlaylistIndex && CurrentSong[1] == CurrentSongListIndex)
+            {
+                mediaPlayer.Play();
+                isMediaPlayerPaused = false;
+                return;
+            }
+
+            PlaySong(CurrentPlaylistIndex, CurrentSongListIndex);
+        }
+
+        private void PlaySong(int currentPlaylistIndex, int currentSongListIndex)
+        {
+            string path = "music\\" + Playlist[CurrentPlaylistIndex] + "\\" + Songs[CurrentSongListIndex] + ".mp3";
+            mediaPlayer.Open(new Uri(path, UriKind.Relative));
+            mediaPlayer.Play();
+
+            // в массив CurrentSong записываем playlist index и song index
+            CurrentSong[0] = CurrentPlaylistIndex;
+            CurrentSong[1] = CurrentSongListIndex;
+
+            OnPropertyChanged("SongTitle");
+        }
+
+        private bool CanExecuteUpdateSongListCommand(object obj)
+        {
+            if (CurrentPlaylistIndex == -1)
+                return false;
+
+            return true;
+        }
+
+        private void ExecuteUpdateSongListCommand(object obj)
+        {
+            CurrentPlaylistIndex = CurrentPlaylistIndex;
+        }
     }
 }
